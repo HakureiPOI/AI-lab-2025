@@ -508,9 +508,37 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
+
+    # 启发值 = 当前点到最远食物点的 mazeDistance（即考虑墙壁的真实最短路径）
+
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    foodList = foodGrid.asList()
+
+    if not foodList:
+        return 0  # 没有食物，启发值为 0
+
+    maxDistance = 0
+
+    # 缓存上次计算过的 mazeDistance（加速）
+    if 'cache' not in problem.heuristicInfo:
+        problem.heuristicInfo['cache'] = {}
+
+    for food in foodList:
+        pair = (position, food)
+
+        # 使用缓存避免重复计算 mazeDistance
+        if pair not in problem.heuristicInfo['cache']:
+            # mazeDistance 是考虑墙壁的最短路径长度
+            distance = mazeDistance(position, food, problem.startingGameState)
+            problem.heuristicInfo['cache'][pair] = distance
+        else:
+            distance = problem.heuristicInfo['cache'][pair]
+
+        # 记录最长的距离（最坏情况启发）
+        if distance > maxDistance:
+            maxDistance = distance
+
+    return maxDistance
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -534,15 +562,17 @@ class ClosestDotSearchAgent(SearchAgent):
         Returns a path (a list of actions) to the closest dot, starting from
         gameState.
         """
-        # Here are some useful elements of the startState
+        # 获取当前 Pacman 的位置
         startPosition = gameState.getPacmanPosition()
+        # 获取当前地图上的食物信息（一个布尔网格）
         food = gameState.getFood()
+        # 获取墙壁位置（用于路径判断）
         walls = gameState.getWalls()
+        # 构造一个搜索问题，其目标是吃到任意一个食物
         problem = AnyFoodSearchProblem(gameState)
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        # 使用广度优先搜索算法，找到最近的食物点
+        return search.breadthFirstSearch(problem)
+    
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
     A search problem for finding a path to any food.
@@ -574,10 +604,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
-        x,y = state
-
+        
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state in list(self.food.asList())
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
