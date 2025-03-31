@@ -87,7 +87,37 @@ def depthFirstSearch(problem: SearchProblem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Stack
+
+    start_state = problem.getStartState()
+
+    # 栈中每个元素是一个三元组：(当前状态, 到达当前状态的动作列表, 总成本)
+    stack = Stack()
+    stack.push((start_state, [], 0))
+
+    # 使用集合记录已访问状态，避免走重复路径
+    visited = set()
+
+    while not stack.isEmpty():
+        current_state, actions, cost = stack.pop()
+
+        # 如果当前状态是目标状态，直接返回到达该处的动作序列
+        if problem.isGoalState(current_state):
+            return actions
+
+        # 避免重复访问
+        if current_state not in visited:
+            visited.add(current_state)
+
+            # 遍历当前状态的所有 successor
+            for successor, action, step_cost in problem.getSuccessors(current_state):
+                if successor not in visited:
+                    # 将新的状态、动作序列、代价推入栈中
+                    new_actions = actions + [action]
+                    stack.push((successor, new_actions, cost + step_cost))
+
+    # 未找到目标，返回空列表
+    return []
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
