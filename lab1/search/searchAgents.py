@@ -296,14 +296,15 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition, frozenset())
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        _, visitedCorners = state
+        return len(visitedCorners) == 4
 
     def getSuccessors(self, state: Any):
         """
@@ -317,6 +318,9 @@ class CornersProblem(search.SearchProblem):
         """
 
         successors = []
+        currentPosition, visitedCorners = state
+        x, y = currentPosition
+
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
@@ -326,6 +330,19 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+
+            if not self.walls[nextx][nexty]:
+                nextPosition = (nextx, nexty)
+                # 如果到了新的角落，加入已访问集合
+                if nextPosition in self.corners and nextPosition not in visitedCorners:
+                    nextVisitedCorners = visitedCorners | {nextPosition}
+                else:
+                    nextVisitedCorners = visitedCorners
+
+                nextState = (nextPosition, frozenset(nextVisitedCorners))
+                successors.append((nextState, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -357,11 +374,49 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    # return cornersHeuristic_1(state, problem)
+    return cornersHeuristic_2(state, problem)
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+"""
+*** 两种启发函数 ***
+------------------------------------------
+启发函数名称 	     | 逻辑描述	
+--------------------|--------------------
+最大距离启发    	 | 从当前位置到所有未访问角落的曼哈顿距离中取最大值	
+贪心最近角落启发      | 从当前位置出发，每次走最近的角落，直到访问完所有角落，并累加路径距离	
+--------------------------------------------
+"""
+
+def cornersHeuristic_1(state: Any, problem: CornersProblem):
+    corners = problem.corners              # 所有角落坐标
+    position, visitedCorners = state       # 当前坐标，已访问角落集合
+
+    # 找出未访问的角落
+    unvisitedCorners = [corner for corner in corners if corner not in visitedCorners]
+
+    # 计算当前位置到所有未访问角落的曼哈顿距离，取最大值
+    distances = [abs(position[0] - x) + abs(position[1] - y) for (x, y) in unvisitedCorners]
+
+    return max(distances) if distances else 0
+
+def cornersHeuristic_2(state: Any, problem: CornersProblem):
+    corners = problem.corners
+    position, visitedCorners = state
+
+    unvisited = [corner for corner in corners if corner not in visitedCorners]
+    current = position
+    total_cost = 0
+
+    # 贪心：每次走最近的角落，直到走完所有未访问角
+    while unvisited:
+        # 找到当前点到最近角落的距离和位置
+        distances = [(abs(current[0] - c[0]) + abs(current[1] - c[1]), c) for c in unvisited]
+        dist, nearest = min(distances)
+        total_cost += dist
+        current = nearest
+        unvisited.remove(nearest)
+
+    return total_cost
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
