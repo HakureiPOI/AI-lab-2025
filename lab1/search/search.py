@@ -122,12 +122,72 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
+
+    start_state = problem.getStartState()
+
+    # 队列中每个元素是：(当前状态, 到达该状态的动作序列, 累计代价)
+    queue = Queue()
+    queue.push((start_state, [], 0))
+
+    visited = set()  # 记录已经访问过的状态
+
+    while not queue.isEmpty():
+        current_state, actions, cost = queue.pop()
+
+        # 如果当前状态是目标状态，返回动作序列
+        if problem.isGoalState(current_state):
+            return actions
+
+        # 跳过已访问状态
+        if current_state not in visited:
+            visited.add(current_state)
+
+            # 遍历后继状态
+            for successor, action, step_cost in problem.getSuccessors(current_state):
+                if successor not in visited:
+                    new_actions = actions + [action]
+                    queue.push((successor, new_actions, cost + step_cost))
+
+    # 如果没有找到目标状态，返回空列表
+    return []
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+
+    start_state = problem.getStartState()
+
+    # 优先队列中每个元素是：(当前状态, 到达该状态的动作序列, 当前总代价)
+    queue = PriorityQueue()
+    queue.push((start_state, [], 0), 0)
+
+    # 记录已访问的状态，以及访问它们的最小代价
+    visited = set()
+
+    while not queue.isEmpty():
+        current_state, actions, cost = queue.pop()
+
+        # 如果当前状态已经访问过，就跳过（说明曾以更优路径访问过它）
+        if current_state in visited:
+            continue
+
+        visited.add(current_state)
+
+        # 如果当前状态是目标状态，返回路径
+        if problem.isGoalState(current_state):
+            return actions
+
+        # 扩展当前状态的所有后继
+        for successor, action, step_cost in problem.getSuccessors(current_state):
+            if successor not in visited:
+                new_cost = cost + step_cost
+                new_actions = actions + [action]
+                queue.push((successor, new_actions, new_cost), new_cost)
+
+    return []
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -139,7 +199,38 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+
+    start_state = problem.getStartState()
+
+    # 优先队列中的元素为：(当前状态, 到达该状态的动作序列, 当前代价 g(n))
+    queue = PriorityQueue()
+    queue.push((start_state, [], 0), 0)
+
+    visited = set()  # 记录已经访问过的状态
+
+    while not queue.isEmpty():
+        current_state, actions, cost = queue.pop()
+
+        # 如果当前状态已访问，说明之前以更小代价访问过，跳过
+        if current_state in visited:
+            continue
+
+        visited.add(current_state)
+
+        # 如果到达目标，返回动作序列
+        if problem.isGoalState(current_state):
+            return actions
+
+        # 遍历后继状态
+        for successor, action, step_cost in problem.getSuccessors(current_state):
+            if successor not in visited:
+                g_cost = cost + step_cost
+                h_cost = heuristic(successor, problem)
+                f_cost = g_cost + h_cost
+                queue.push((successor, actions + [action], g_cost), f_cost)
+
+    return []
 
 
 # Abbreviations
