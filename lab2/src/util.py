@@ -134,7 +134,7 @@ def conv_forward_naive(x, w, b, conv_param):
       W' = 1 + (W + 2 * pad - WW) / stride
     - cache: (x_p, w, b, conv_param)  返回填充后的x便于反向传播直接使用
     """
-    
+
     stride = conv_param['stride']
     pad = conv_param['pad']
 
@@ -147,13 +147,13 @@ def conv_forward_naive(x, w, b, conv_param):
     W_out = 1 + (W + 2 * pad - WW) // stride
     out = np.zeros((N, F, H_out, W_out))
 
-    x_windows = np.lib.stride_tricks.sliding_window_view(x_p, (C, HH, WW))  
-    x_windows = x_windows[:, ::stride, ::stride, :, :, :]  
+    x_windows = np.lib.stride_tricks.sliding_window_view(x_p, (HH, WW), axis=(2,3))
+    x_windows = x_windows[:, :, ::stride, ::stride, :, :]
 
-    for i in range(N):
+    for n in range(N):
         for f in range(F):
-            conv = np.sum(x_windows[i] * w[f], axis=(2,3,4))  
-            out[i, f] = conv + b[f] 
+            conv = np.sum(x_windows[n] * w[f][:, None, None, :, :], axis=(0,3,4))
+            out[n, f] = conv + b[f]
 
     cache = (x_p, w, b, conv_param)
     return out, cache
