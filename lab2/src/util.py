@@ -135,7 +135,28 @@ def conv_forward_naive(x, w, b, conv_param):
     - cache: (x_p, w, b, conv_param)  返回填充后的x便于反向传播直接使用
     """
     
-    Todo()
+    stride = conv_param['stride']
+    pad = conv_param['pad']
+
+    N, C, H, W = x.shape
+    F, _, HH, WW = w.shape
+
+    x_p = np.pad(x, ((0,0), (0,0), (pad,pad), (pad,pad)), mode='constant')
+
+    H_out = 1 + (H + 2 * pad - HH) // stride
+    W_out = 1 + (W + 2 * pad - WW) // stride
+    out = np.zeros((N, F, H_out, W_out))
+
+    x_windows = np.lib.stride_tricks.sliding_window_view(x_p, (C, HH, WW))  
+    x_windows = x_windows[:, ::stride, ::stride, :, :, :]  
+
+    for i in range(N):
+        for f in range(F):
+            conv = np.sum(x_windows[i] * w[f], axis=(2,3,4))  
+            out[i, f] = conv + b[f] 
+
+    cache = (x_p, w, b, conv_param)
+    return out, cache
     
 
 def conv_backward_naive(dout, cache):
