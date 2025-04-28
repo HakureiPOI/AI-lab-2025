@@ -21,7 +21,7 @@ train_acc_list = []
 test_acc_list = []
 
 iter_per_epoch = max(train_size / batch_size, 1)
-epoch = 5
+epoch = 20
 iters_num = int(iter_per_epoch * epoch)
 total_elapsed_time = 0
 for i in range(iters_num):
