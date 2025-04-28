@@ -15,14 +15,15 @@ def sigmoid(x):
     返回:sigmoid函数值,numpy数组类型
     """
     # 指数函数可直接使用numpy.exp()
-    Todo()
+    return 1 / (1 + np.exp(-x))
 
 def sigmoid_grad(x):
     """ sigmoid函数梯度
     x: numpy数组类型
     返回: 梯度值,numpy数组类型
     """
-    Todo()
+    # sigmoid 的梯度可以用 sigmoid 表示啊
+    return sigmoid(x) * (1 - sigmoid(x))
 
 
 def softmax(x):
@@ -31,7 +32,7 @@ def softmax(x):
     返回: numpy数组类型
     """
     # 如果x中的值过大会导致指数计算的结果过大发生溢出：np.exp(x)会出现inf，最终的结果会出现nan，可考虑减去每一个样本对应x中的最大值
-    Todo()
+    return np.exp(x - np.max(x, axis=1, keepdims=True)) / np.sum(np.exp(x - np.max(x, axis=1, keepdims=True)), axis=1, keepdims=True)
 
 def cross_entropy_error(y, t):
     # y是预测标签，t是真实标签
