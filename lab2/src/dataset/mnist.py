@@ -4,7 +4,7 @@ import gzip
 import numpy as np
 import urllib.request
 
-def load_mnist(normalize=True, flatten=True, one_hot_label=False):
+def load_mnist(normalize=True, flatten=False, one_hot_label=False):
     url = 'http://yann.lecun.com/exdb/mnist/'
     key_file = {
         'train_img': 'train-images-idx3-ubyte.gz',
