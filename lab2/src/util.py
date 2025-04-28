@@ -31,7 +31,7 @@ def softmax(x):
     x: numpy数组类型,需考虑多个样本即二维数组的情况
     返回: numpy数组类型
     """
-    if x.dim == 1:
+    if x.ndim == 1:
         x = x.reshape(1, -1)
 
     # 如果x中的值过大会导致指数计算的结果过大发生溢出：np.exp(x)会出现inf，最终的结果会出现nan，可考虑减去每一个样本对应x中的最大值
