@@ -12,8 +12,8 @@ import time
 # 读入数据
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=False)
 
-x_train = x_train[:500]
-x_test = x_test[:500]
+x_train = x_train[:1000]
+x_test = x_test[:1000]
 
 if x_train.ndim == 3:
     x_train = x_train[:, np.newaxis, :, :]
@@ -22,7 +22,7 @@ if x_train.ndim == 3:
 network = SimpleConvNet()
 train_size = x_train.shape[0]
 batch_size = 100
-learning_rate = 0.001
+learning_rate = 0.005
 print('train size', train_size)
 
 train_loss_list = []
