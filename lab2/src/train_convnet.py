@@ -12,8 +12,12 @@ import time
 # 读入数据
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=False)
 
+shuffle_index = np.random.permutation(len(x_train))
+x_train = x_train[shuffle_index]
+t_train = t_train[shuffle_index]
+
 x_train = x_train[:1000]
-x_test = x_test[:1000]
+t_train = t_train[:1000]
 
 if x_train.ndim == 3:
     x_train = x_train[:, np.newaxis, :, :]
