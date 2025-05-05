@@ -22,7 +22,7 @@ if x_train.ndim == 3:
 network = SimpleConvNet()
 train_size = x_train.shape[0]
 batch_size = 100
-learning_rate = 0.001
+learning_rate = 0.01
 print('train size', train_size)
 
 train_loss_list = []
@@ -30,7 +30,7 @@ train_acc_list = []
 test_acc_list = []
 
 iter_per_epoch = max(train_size / batch_size, 1)
-epoch = 30
+epoch = 100
 iters_num = int(iter_per_epoch * epoch)
 total_elapsed_time = 0
 for i in range(iters_num):
