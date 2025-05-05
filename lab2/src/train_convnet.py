@@ -19,7 +19,7 @@ if x_train.ndim == 3:
 network = SimpleConvNet()
 train_size = x_train.shape[0]
 batch_size = 100
-learning_rate = 0.02
+learning_rate = 0.001
 print('train size', train_size)
 
 train_loss_list = []
