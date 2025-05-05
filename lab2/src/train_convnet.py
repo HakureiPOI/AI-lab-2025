@@ -16,8 +16,8 @@ shuffle_index = np.random.permutation(len(x_train))
 x_train = x_train[shuffle_index]
 t_train = t_train[shuffle_index]
 
-x_train = x_train[:1000]
-t_train = t_train[:1000]
+x_train = x_train[:10000]
+t_train = t_train[:10000]
 
 if x_train.ndim == 3:
     x_train = x_train[:, np.newaxis, :, :]
@@ -25,8 +25,8 @@ if x_train.ndim == 3:
 
 network = SimpleConvNet()
 train_size = x_train.shape[0]
-batch_size = 100
-learning_rate = 0.005
+batch_size = 200
+learning_rate = 0.01
 print('train size', train_size)
 
 train_loss_list = []
