@@ -12,6 +12,9 @@ import time
 # 读入数据
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=False)
 
+x_train = x_train[:2000]
+x_test = x_test[:2000]
+
 if x_train.ndim == 3:
     x_train = x_train[:, np.newaxis, :, :]
     x_test = x_test[:, np.newaxis, :, :]
