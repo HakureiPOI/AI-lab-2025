@@ -12,8 +12,8 @@ class SimpleConvNet:
         conv - relu - pool - affine - relu - affine - softmax
     """
     def __init__(self, input_dim=(1, 28, 28), 
-                 conv_param={'filter_num':20, 'filter_size':3, 'pad':0, 'stride':1},
-                 hidden_size=64, output_size=10, weight_init_std=0.01):
+                 conv_param={'filter_num':30, 'filter_size':3, 'pad':0, 'stride':1},
+                 hidden_size=100, output_size=10, weight_init_std=0.01):
         filter_num = conv_param['filter_num']
         filter_size = conv_param['filter_size']
         filter_pad = conv_param['pad']
